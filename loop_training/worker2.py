@@ -30,7 +30,7 @@ Y = f(X)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
 kv_store = mx.kv.create('dist_async')
-batch_size = 1
+batch_size = 1024
 train_iter = mx.io.NDArrayIter(X_train, Y_train, batch_size, shuffle=True,label_name='lin_reg_label')
 eval_iter = mx.io.NDArrayIter(X_test, Y_test, batch_size, shuffle=False)
 
@@ -46,10 +46,9 @@ model = mx.mod.Module(
 )
 
 model.fit(train_iter, eval_iter,
-            optimizer_params={
-                'learning_rate':0.005, 'momentum': 0.9},
+            optimizer_params={'learning_rate':0.0000001},
             num_epoch=50,
-            eval_metric='mse',
+            eval_metric='mae',
             batch_end_callback
-                 = mx.callback.Speedometer(batch_size, 2),
+                 = mx.callback.Speedometer(batch_size, 20),
             kvstore=kv_store)
